@@ -1,0 +1,52 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
+</head>
+<body>
+    <div id="main-container">
+        <header>
+            <h1>SNAKE.IO</h1>
+            <p id="high-score">Điểm số cao nhất: <span id="score">31</span></p>
+        </header>
+        
+        <div id="game-settings">
+            <div id="buttons-top">
+                <button class="btn-action">THAY ĐỔI DA</button>
+                <button class="btn-action">Âm nhạc</button>
+            </div>
+            
+            <div id="play-area">
+                <input type="text" id="player-name" value="Player251">
+                <p id="server-status">Máy chủ ngừng hoạt động</p>
+                <button id="play-button">CHƠI</button>
+            </div>
+            
+            <div id="app-links">
+                <a href="#" class="app-btn"> 
+                    <img src="path-to-google-play-icon" alt="Google Play">
+                </a>
+                <a href="#" class="app-btn">
+                    <img src="path-to-app-store-icon" alt="App Store">
+                </a>
+            </div>
+        </div>
+        
+        <footer>
+            <a href="#">Tài nguyên</a>
+            <a href="#">Fandom</a>
+            <a href="#">Liên hệ</a>
+            <a href="#">Quyền riêng tư</a>
+        </footer>
+        
+        <div id="social-buttons">
+            <button class="social-btn">CHIA SẺ</button>
+            <button class="social-btn">CHIA SẺ</button>
+        </div>
+    </div>
+</body>
+</html>
