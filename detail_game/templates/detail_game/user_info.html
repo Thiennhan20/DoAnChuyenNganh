@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Thông tin người chơi</title>
+</head>
+<body>
+  <h2>Thông tin người chơi</h2>
+  <p>Tên đăng nhập: {{ user.username }}</p>
+  
+  <!-- Form chỉnh sửa email -->
+  <form method="post">
+      {% csrf_token %}
+      <label for="email">Email:</label>
+      <input type="email" id="email" name="email" value="{{ user.email }}" required>
+      <button type="submit">Cập nhật Email</button>
+  </form>
+
+  <!-- Thông báo -->
+  {% if messages %}
+    {% for message in messages %}
+      <p>{{ message }}</p>
+    {% endfor %}
+  {% endif %}
+  
+  <button onclick="window.location.href='{% url 'base' %}'">Quay lại trang chủ</button>
+  
+</body>
+</html>

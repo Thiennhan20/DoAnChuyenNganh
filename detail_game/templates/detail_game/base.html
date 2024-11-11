@@ -1,73 +1,230 @@
 {% load static %}
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Snake Game</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-</head>
-<body>
-    <!-- Top-left buttons -->
-    <div id="top-left">
-        <button class="btn-icon">
-            <i class="fas fa-paint-brush"></i>
-            <span>THAY ĐỔI DA</span>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="icon" type="image/png" href="{% static 'images/snake.png' %}">
+  </head>
+  <body>
+    <div id="hud">
+      <div id="top-left">
+        <button class="btn-icon" id="change-skin-button">
+          <i class="fas fa-paint-brush"></i>
+          <span>THAY ĐỔI DA</span>
         </button>
-        <button class="btn-icon">
-            <i class="fas fa-music"></i>
-            <span>Âm nhạc</span>
+        <button class="btn-icon" id="music-button">
+          <i class="fas fa-music"></i>
+          <audio id="background-music" src="{% static 'media/sound_snack.mp3' %}" loop></audio>
+          <span>Bật/Tắt</span>
         </button>
+      </div>
+      <div id="top-right">
+        <p>
+          <span class="label">Điểm số:</span> <span id="score">0</span>
+        </p>
+        <p>
+          <span class="label">Điểm cao nhất:</span> <span id="high-score">0</span>
+        </p>
+      </div>
     </div>
-
-    <!-- Top-right high score -->
-    <div id="top-right">
-        <p>Điểm số cao nhất: <span id="score">81</span></p>
-    </div>
-
-    <!-- Main container -->
-    <div id="main-container">
-        <header>
-            <h1>SNAKE.IO</h1>
-        </header>
-
-        <div id="game-settings">
-            <div id="play-area">
-                <input type="text" id="player-name" value="Player251">
-                <p id="server-status">Máy chủ ngừng hoạt động</p>
-                <div id="play-buttons">
-                    <button id="single-play-button" class="btn-icon">
-                        <i class="fas fa-play"></i>
-                        <span>CHƠI ĐƠN</span>
-                    </button>
-                    <button id="multi-play-button" class="btn-icon">
-                        <i class="fas fa-users"></i>
-                        <span>CHƠI NHIỀU NGƯỜI</span>
-                    </button>
-                </div>
-            </div>
+    <!-- Skin Color Picker Overlay (thay thế phần bảng màu cũ) -->
+    <div id="skin-picker-overlay" class="hidden">
+      <div id="skin-picker-container">
+        <h2>Chọn Màu Da Rắn</h2>
+        <div class="color-picker">
+          <label for="head-color">Màu đầu rắn:</label>
+          <input type="color" id="head-color" value="#006400" />
         </div>
+        <div class="color-picker">
+          <label for="body-color">Màu thân rắn:</label>
+          <input type="color" id="body-color" value="#8FBC8F" />
+        </div>
+
+        <!-- Thêm lựa chọn Gradient -->
+        <div class="color-picker">
+          <label for="gradient-color-1">Màu Gradient 1:</label>
+          <input type="color" id="gradient-color-1" value="#74ebd5" />
+          <label for="gradient-color-2">Màu Gradient 2:</label>
+          <input type="color" id="gradient-color-2" value="#9face6" />
+        </div>
+
+        <!-- Khu vực xem trước -->
+        <div id="snake-preview">
+          <div id="preview-snake-head"></div>
+          <div id="preview-snake-body"></div>
+        </div>
+
+        <!-- Nút Áp dụng và Hủy -->
+        <div class="button-group">
+          <button id="apply-skin" class="apply-btn">Áp Dụng</button>
+          <button id="cancel-skin" class="cancel-btn">Hủy</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Bottom-left settings -->
+    <div id="main-container">
+      <header>
+        <h1>SNAKE.FAKE</h1>
+      </header>
+      <div id="game-settings">
+        <div id="play-area">
+          <input type="text" id="player-name" value="{{ username }}" />
+          <p id="server-status">Máy chủ ngừng hoạt động</p>
+          <div id="play-buttons">
+            <button id="single-play-button" class="btn-icon">
+              <i class="fas fa-play"></i>
+              <span>CHƠI ĐƠN</span>
+            </button>
+            <button id="multi-play-button" class="btn-icon">
+              <i class="fas fa-users"></i>
+              <span>CHƠI NHIỀU NGƯỜI</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <div id="bottom-left">
-        <button class="btn-icon">
-            <i class="fas fa-cog"></i>
-            <span>CÀI ĐẶT</span>
-        </button>
+      <button class="btn-icon">
+        <i class="fas fa-cog"></i>
+        <span>CÀI ĐẶT</span>
+      </button>
+    </div>
+    <div id="settings-menu" class="hidden">
+      <div class="settings-content">
+        <div class="row">
+          <button class="btn-icon">
+            <i class="fas fa-gamepad"></i>
+            <span>ĐIỀU KHIỂN</span>
+          </button>
+          <button class="btn-icon">
+            <i class="fas fa-question-circle"></i>
+            <span>HƯỚNG DẪN</span>
+          </button>
+          <button class="btn-icon">
+            <i class="fas fa-language"></i>
+            <span>THAY ĐỔI NGÔN NGỮ</span>
+          </button>
+          <button id="leaderboard-button" class="btn-icon">
+            <i class="fas fa-trophy"></i>
+            <span>BẢNG XẾP HẠNG</span>
+          </button>
+          
+          <div id="leaderboard-overlay" class="hidden">
+              <div id="leaderboard-container">
+                  <div class="dropdown-container">
+                    <label for="timeframe">Chọn Thời Gian:</label>
+                    <select id="timeframe" onchange="updateLeaderboard()">
+                        <option value="weekly">Hàng tuần</option>
+                        <option value="daily">Hàng ngày</option>
+                        <option value="all_time">Tất cả thời gian</option>
+                    </select>
+                  </div>
+                  <h2>Bảng Xếp Hạng</h2>
+                  <ul>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <li><span>01 akbar</span> <span>275,994,684</span></li>
+                      <!-- Additional entries -->
+                  </ul>
+                  <div style="display: flex; justify-content: center; margin-top: 20px;">
+                    <button id="close-leaderboard" class="btn-icon">Đóng</button>
+                </div>
+              </div>
+          </div>
+        
+        </div>
+        <div class="row">
+          {% if request.user.is_authenticated %}
+            <!-- Hiển thị nút Tài khoản và Logout nếu đã đăng nhập -->
+            <button class="btn-icon" onclick="window.location.href='{% url 'user_info' %}'">
+              <i class="fas fa-user"></i>
+              <span>Tài khoản</span>
+            </button>
+            <button class="btn-icon" onclick="logoutUser()">
+              <i class="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          {% else %}
+            <!-- Hiển thị "Bạn đã có tài khoản chưa?" nếu chưa đăng nhập -->
+            <button class="btn-icon btn-large" onclick="window.location.href='{% url 'login' %}'">
+              <i class="fas fa-sign-in-alt"></i>
+              <span>Bạn đã có tài khoản chưa?</span>
+            </button>
+          {% endif %}
+        </div>        
+      </div>
+      <button class="btn-icon" id="close-settings">
+        <i class="fas fa-times"></i>
+      </button>
+    </div>
+    
+    
+    <div id="bottom-right">
+      <button class="btn-icon">
+        <i class="fab fa-facebook-f"></i>
+        <span>CHIA SẺ</span>
+      </button>
+      <button class="btn-icon">
+        <i class="fab fa-twitter"></i>
+        <span>CHIA SẺ</span>
+      </button>
     </div>
 
-    <!-- Bottom-right share buttons -->
-    <div id="bottom-right">
-        <button class="btn-icon">
-            <i class="fab fa-facebook-f"></i>
-            <span>CHIA SẺ</span>
-        </button>
-        <button class="btn-icon">
-            <i class="fab fa-twitter"></i>
-            <span>CHIA SẺ</span>
-        </button>
+    <div id="game-over-screen" class="hidden">
+      <div id="stats">
+        <h2>Game Over</h2>
+        <p>
+          Điểm số: <span id="final-score">0</span>
+        </p>
+        <div class="button-group">
+          <button id="restart-button" class="btn-icon">
+            <i class="fas fa-redo"></i>
+            <span>Chơi lại</span>
+          </button>
+          <button id="back-button" class="btn-icon">
+            <i class="fas fa-arrow-left"></i>
+            <span>Trở về</span>
+          </button>
+        </div>
+      </div>
     </div>
-</body>
+
+    <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
+    <script src="{% static 'js/snake.js' %}"></script>
+    <script>
+      function logoutUser() {
+        fetch("{% url 'logout' %}", {
+          method: 'POST',
+          headers: {
+            'X-CSRFToken': '{{ csrf_token }}', // Đảm bảo bạn đã thêm `{% csrf_token %}` vào template
+          },
+        }).then(response => {
+          if (response.ok) {
+            window.location.href = "{% url 'base' %}"; // Điều hướng về trang chủ sau khi logout thành công
+          } else {
+            alert("Logout không thành công!");
+          }
+        });
+      }
+    </script>
+    <script>
+      const sfxWing = new Audio("{% static 'media/sfx_wing.mp3' %}");
+      const sfxPoint = new Audio("{% static 'media/sfx_point.mp3' %}");
+      const sfxDie = new Audio("{% static 'media/sfx_die.mp3' %}");
+      const sfxSwooshing = new Audio("{% static 'media/sfx_swooshing.mp3' %}");
+        sfxDie.addEventListener('canplaythrough', () => {
+          console.log("Die sound loaded successfully");
+      }, false);
+    </script>
+  
+  </body>
 </html>

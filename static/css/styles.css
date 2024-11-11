@@ -6,21 +6,39 @@
     padding: 0;
 }
 
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden; /* Ngăn cuộn khi canvas full màn hình */
+}
+
 body {
     display: flex;
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background-color: #aeddf0;
+    background: linear-gradient(135deg, #74ebd5, #9face6); /* Gradient */
     font-family: 'Oswald', sans-serif;
     position: relative;
+    animation: backgroundMove 10s infinite alternate; /* Thêm animation */
+}
+
+@keyframes backgroundMove {
+    0% {
+        background-position: 0% 50%;
+    }
+    100% {
+        background-position: 100% 50%;
+    }
 }
 
 #main-container {
     text-align: center;
     color: #000;
-    background-color: #e0e0e0;
-    padding: 20px;
+    background-color: rgba(255, 255, 255, 0.8); /* Trắng mờ */
+    padding: 60px;
     border-radius: 15px;
     box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.1);
 }
@@ -32,6 +50,10 @@ header h1 {
 
 #play-area {
     margin-bottom: 20px;
+}
+
+#play-area p {
+    margin-bottom: 30px;
 }
 
 #player-name {
@@ -58,7 +80,7 @@ header h1 {
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background-color: #3498db;
+    background-color: #3a7bd5; /* Màu xanh lam nhạt */
     color: #fff;
     border: none;
     border-radius: 50%;
@@ -67,34 +89,38 @@ header h1 {
     width: 80px;
     height: 80px;
     text-align: center;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
+/* Màu biểu tượng */
 .btn-icon i {
     font-size: 24px;
 }
 
+/* Màu văn bản trong nút */
 .btn-icon span {
     margin-top: 5px;
     font-size: 0.8rem;
 }
-#single-play-button {
-    background-color: #2ecc71; /* Green for single play */
-}
 
-#single-play-button:hover {
-    background-color: #27ae60; /* Darker green on hover */
-}
-
-#multi-play-button {
-    background-color: #f1c40f; /* Light yellow for multiplayer */
-}
-
-#multi-play-button:hover {
-    background-color: #f39c12; /* Darker yellow on hover */
-}
+/* Hiệu ứng hover cho nút */
 .btn-icon:hover {
-    background-color: #2980b9;
+    background-color: #2a6ab7; /* Màu xanh lam đậm hơn khi hover */
+    transform: scale(1.1); /* Phóng to nhẹ khi hover */
+}
+
+.button-group {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Adjust the gap between the buttons as needed */
+}
+
+#back-button {
+    background-color: #3498db; /* Match the style of other buttons */
+}
+
+#back-button:hover {
+    background-color: #2980b9; /* Darker blue on hover */
 }
 
 #top-left, #top-right, #bottom-left, #bottom-right {
@@ -126,4 +152,369 @@ header h1 {
     display: flex;
     flex-direction: column;
     gap: 10px;
+}
+
+canvas {
+    display: block;
+    width: 100vw;
+    height: 100vh;
+    border: none;
+}
+
+.hidden {
+    display: none !important;
+}
+
+#game-over-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#stats {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+}
+
+#stats h2 {
+    padding: 30px;
+}
+
+#stats p {
+    padding: 30px;
+}
+
+#top-right {
+    text-align: right;
+    font-size: 1.2rem;
+    color: #333;
+}
+
+#top-right p {
+    margin: 10px 0; /* Increased margin to create more space between lines */
+}
+
+.label {
+    font-weight: bold;
+    color: #000;
+}
+
+#score, #high-score {
+    font-weight: bold;
+    color: #007bff;
+}
+.hidden {
+    display: none;
+}
+
+/* CSS dành riêng cho bảng thay đổi da, không ảnh hưởng đến các phần khác */
+#skin-picker-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+#skin-picker-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    max-width: 500px;
+    width: 80%;
+}
+
+.color-picker {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    margin: 10px 0;
+}
+
+#snake-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+}
+
+#preview-snake-head, #preview-snake-body {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    margin: 5px;
+}
+
+.apply-btn, .cancel-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 1rem;
+    border-radius: 5px;
+}
+
+.apply-btn {
+    background-color: #28a745;
+}
+
+.cancel-btn {
+    background-color: #dc3545;
+}
+
+.hidden {
+    display: none;
+}
+
+#settings-menu {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95); /* Semi-transparent background */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    z-index: 1000; /* Ensure it overlays the game screen */
+  }
+  
+  .settings-content {
+    display: grid;
+    grid-template-rows: auto auto; /* Two rows for two groups */
+    gap: 250px;
+    text-align: center;
+  }
+  
+  .row {
+    display: flex;
+    justify-content: center;
+    gap: 100px; /* Adjust space between buttons */
+  }
+  
+  .btn-icon {
+    background-color: #3498db;
+    color: #fff;
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
+  }
+  
+  .btn-icon:hover {
+    background-color: #2980b9;
+    transform: scale(1.1);
+  }
+  
+  #close-settings {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    font-size: 2rem;
+    background-color: transparent;
+    color: #333;
+  }
+  
+/* Large Button "Bạn đã có tài khoản chưa?" */
+.btn-large {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.2rem;
+    text-align: center;
+    background-color: #a1c4fd;
+    color: #333;
+    border-radius: 10px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-large:hover {
+    background-color: #89a8e1;
+}
+
+/* Bottom Right Button Customizations */
+#bottom-right .btn-icon,
+#bottom-left .btn-icon {
+    background-color: #ff6b6b;
+}
+
+#bottom-right .btn-icon:hover,
+#bottom-left .btn-icon:hover {
+    background-color: #e55b5b;
+}
+
+/* Social Media Icon Colors */
+#bottom-right .btn-icon .fab.fa-facebook-f {
+    color: #3b5998;
+}
+
+#bottom-right .btn-icon .fab.fa-twitter {
+    color: #1DA1F2;
+}
+
+/* Text Color for Social Media Buttons */
+#bottom-right .btn-icon span {
+    color: #000;
+}
+
+#bottom-right .btn-icon:hover span {
+    color: #fff;
+}
+#leaderboard-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8); /* Dark transparent background */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    color: #fff;
+}
+
+#leaderboard-container {
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent */
+    padding: 30px;
+    border-radius: 15px;
+    text-align: center;
+    width: 80%; /* Adjust as needed */
+    max-width: 800px;
+    animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+    from { transform: translateY(-50px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+#leaderboard-container h2 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+    color: #FFD700; /* Gold color for title */
+    text-shadow: 0px 0px 10px rgba(255, 215, 0, 0.8); /* Glowing effect */
+}
+
+#leaderboard-container ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+    max-height: 300px; /* Set a maximum height to enable scrolling */
+    overflow-y: auto; /* Enable vertical scrolling */
+    width: 100%;
+    scrollbar-width: thin; /* For modern browsers */
+}
+
+/* Customize scrollbar for Webkit browsers (Chrome, Safari) */
+#leaderboard-container ul::-webkit-scrollbar {
+    width: 8px; /* Width of scrollbar */
+}
+
+#leaderboard-container ul::-webkit-scrollbar-thumb {
+    background-color: rgba(255, 215, 0, 0.6); /* Gold color for scrollbar thumb */
+    border-radius: 10px;
+}
+
+#leaderboard-container ul::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent track */
+}
+
+/* Optional: Add padding around the scrollable content */
+#leaderboard-container li {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    margin-bottom: 8px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    font-size: 1.1rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#leaderboard-container li:hover {
+    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
+}
+
+#close-leaderboard {
+    margin-top: 20px;
+    padding: 10px 20px;
+    border: none;
+    background-color: #FF4136;
+    color: #fff;
+    font-size: 1.2rem;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#close-leaderboard:hover {
+    background-color: #ff5733;
+}
+#close-leaderboard {
+    margin-top: 20px;
+    padding: 10px 30px;
+    border: none;
+    background-color: #FF4136; /* Soft red color */
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: bold;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add a subtle shadow */
+}
+
+/* Hover effect */
+#close-leaderboard:hover {
+    background-color: #ff5733; /* Brighter shade for hover */
+    transform: scale(1.05); /* Slightly enlarge on hover */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+}
+
+.dropdown-container {
+    margin-bottom: 20px;
+    text-align: center;
+}
+
+.dropdown-container label {
+    font-size: 1.2rem;
+    color: #FFD700; /* Gold color for label */
+    margin-right: 10px;
+}
+
+#timeframe {
+    padding: 10px;
+    font-size: 1rem;
+    border-radius: 5px;
+    border: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    color: #333;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+#timeframe:hover {
+    background-color: rgba(255, 255, 255, 1);
 }

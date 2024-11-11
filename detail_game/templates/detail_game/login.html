@@ -1,0 +1,116 @@
+{% load socialaccount %}
+{% providers_media_js %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Open Sans', Helvetica, Arial, sans-serif;
+            background-color: #f4f4f4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+            width: 350px;
+            text-align: center;
+        }
+
+        h2 {
+            margin-bottom: 20px;
+            font-size: 24px;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            text-align: left;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .submit-btn {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            margin-top: 20px;
+            cursor: pointer;
+        }
+
+        .submit-btn:hover {
+            background-color: #45a049;
+        }
+
+        .forgot-pass {
+            margin-top: 10px;
+            font-size: 12px;
+        }
+
+        .register-btn {
+            margin-top: 20px;
+            background-color: #008CBA;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            width: 100%;
+            cursor: pointer;
+        }
+
+        .register-btn:hover {
+            background-color: #007bb5;
+        }
+
+        .login-footer {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="login-container">
+    <h2>Login</h2>
+    <form action="" method="post">
+        {% csrf_token %}
+        <label for="username">Email</label>
+        <input type="text" id="username" name="username" placeholder="Enter your email">
+
+        <label for="password">Password</label>
+        <input type="password" id="password" name="password" placeholder="Enter your password">
+
+        <button type="submit" class="submit-btn">Sign In</button>
+        <button class="submit-btn"><a href="{% provider_login_url 'google' %}">Login with Google</a></button>
+        <button class="submit-btn"><a href="{% provider_login_url 'facebook' method='oauth2' %}">Login with Facebook</a></button>
+    </form>
+
+    <p class="forgot-pass"><a href="{% url 'reset_password' %}">Forgot password?</a></p>
+
+    <button class="register-btn" onclick="window.location.href='{% url 'register' %}'">Create an Account</button>
+</div>
+
+</body>
+</html>
