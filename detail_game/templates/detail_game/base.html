@@ -7,7 +7,7 @@
     <title>Snake Game</title>
     <link rel="stylesheet" href="{% static 'css/styles.css' %}" />
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" />
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js" defer></script>
     <link rel="icon" type="image/png" href="{% static 'images/snake.png' %}">
   </head>
   <body>
@@ -88,7 +88,35 @@
         </div>
       </div>
     </div>
+    <div id="chat-box">
+      <div id="toggle-chat">
+        <div class="icon">
+            <i class="fas fa-envelope"></i>
+        </div>
+        <div class="content">
+            <strong></strong>
+        </div>
+      </div>
+    
+    
+      <div class="chat-content hidden" id="chat-content">
+        <div id="messages">
+           {% comment %} nội dung đoạn chat ở đây {% endcomment %}
+        </div>
+        <div class="chat-input">
+          <form id="chat-form" style="width: 100%; display: flex; gap: 10px;">
+              <input type="text" id="message-input" placeholder="Enter your message..." autocomplete="off" />
+              <button type="submit" id="send-button">
+                  <i class="fas fa-paper-plane"></i>
+              </button>
+          </form>
+        </div>
+      
+        <i class="fas fa-times close-icon" id="close-chat"></i>
+      </div>
+    </div>
 
+    
     <div id="bottom-left">
       <button class="btn-icon">
         <i class="fas fa-cog"></i>
@@ -126,14 +154,14 @@
                     </select>
                   </div>
                   <h2>Bảng Xếp Hạng</h2>
-                  <ul>
+                  <ul id="leaderboard-list">
+                      {% comment %} <li><span>01 akbar</span> <span>275,994,684</span></li>
                       <li><span>01 akbar</span> <span>275,994,684</span></li>
                       <li><span>01 akbar</span> <span>275,994,684</span></li>
                       <li><span>01 akbar</span> <span>275,994,684</span></li>
                       <li><span>01 akbar</span> <span>275,994,684</span></li>
                       <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <!-- Additional entries -->
+                      <!-- Additional entries --> {% endcomment %}
                   </ul>
                   <div style="display: flex; justify-content: center; margin-top: 20px;">
                     <button id="close-leaderboard" class="btn-icon">Đóng</button>
@@ -149,13 +177,16 @@
               <i class="fas fa-user"></i>
               <span>Tài khoản</span>
             </button>
-            <button class="btn-icon" onclick="logoutUser()">
-              <i class="fas fa-sign-out-alt"></i>
-              <span>Logout</span>
-            </button>
+            <form method="post" action="{% url 'account_logout' %}" >
+              {% csrf_token %}
+              <button type="submit" class="btn-icon">
+                  <i class="fas fa-sign-out-alt"></i>
+                  <span>Logout</span>
+              </button>
+            </form>
           {% else %}
             <!-- Hiển thị "Bạn đã có tài khoản chưa?" nếu chưa đăng nhập -->
-            <button class="btn-icon btn-large" onclick="window.location.href='{% url 'login' %}'">
+            <button class="btn-icon btn-large" onclick="window.location.href='{% url 'account_login' %}'">
               <i class="fas fa-sign-in-alt"></i>
               <span>Bạn đã có tài khoản chưa?</span>
             </button>
@@ -183,7 +214,13 @@
       <div id="stats">
         <h2>Game Over</h2>
         <p>
-          Điểm số: <span id="final-score">0</span>
+          Số màn đã vượt qua: <span id="levels-completed">0</span>
+        </p>
+        <p>
+          Tổng thời gian chơi: <span id="play-time">00:00</span>
+        </p>
+        <p>
+          Điểm tổng số: <span id="final-score">0</span>
         </p>
         <div class="button-group">
           <button id="restart-button" class="btn-icon">
@@ -198,29 +235,261 @@
       </div>
     </div>
 
+    <div id="time-remaining" class="time-remaining hidden">00:00</div>
+    <div id="level-display" class="level-display hidden">
+      Màn: <span id="level-number">1</span>
+    </div>
+
+  
     <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
     <script src="{% static 'js/snake.js' %}"></script>
     <script>
-      function logoutUser() {
-        fetch("{% url 'logout' %}", {
-          method: 'POST',
-          headers: {
-            'X-CSRFToken': '{{ csrf_token }}', // Đảm bảo bạn đã thêm `{% csrf_token %}` vào template
-          },
-        }).then(response => {
-          if (response.ok) {
-            window.location.href = "{% url 'base' %}"; // Điều hướng về trang chủ sau khi logout thành công
-          } else {
-            alert("Logout không thành công!");
+        document.addEventListener("DOMContentLoaded", function () {
+          const leaderboardTimeframe = document.getElementById("leaderboard-timeframe");
+          const leaderboardList = document.getElementById("leaderboard-list");
+      
+          if (!leaderboardTimeframe || !leaderboardList) {
+              console.error("Leaderboard elements not found.");
+              return;
           }
-        });
-      }
+      
+          function fetchLeaderboard(timeframe) {
+            const url =
+                timeframe === "daily"
+                    ? "/get_high_scores_daily/"
+                    : "/get_high_scores_weekly/";
+        
+            fetch(url)
+                .then((response) => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then((data) => {
+                    leaderboardList.innerHTML = ""; // Xóa danh sách cũ
+                    data.forEach((entry, index) => {
+                        const listItem = document.createElement("li");
+                        listItem.innerText = `${index + 1}. ${entry.username} - ${entry.high_score}`;
+                        leaderboardList.appendChild(listItem);
+                    });
+                })
+                .catch((error) => {
+                    console.error("Error fetching leaderboard:", error);
+                    alert("Không thể tải bảng xếp hạng. Vui lòng thử lại sau!");
+                });
+        }
+        
+      
+          leaderboardTimeframe.addEventListener("change", (e) => {
+              fetchLeaderboard(e.target.value);
+          });
+      
+          fetchLeaderboard("daily");
+      });
+    
+    </script>
+    <script type="text/javascript">
+      // JavaScript to manage WebSocket connection and UI interactions
+      let chatSocket; // Declare chatSocket in the global scope
+
+      document.addEventListener("DOMContentLoaded", function () {
+          const chatBox = document.getElementById("chat-box");
+          const toggleChat = document.getElementById("toggle-chat");
+          const chatContent = document.getElementById("chat-content");
+          const closeChat = document.getElementById("close-chat");
+          const messages = document.getElementById("messages");
+          const chatForm = document.getElementById("chat-form");
+          const messageInput = document.getElementById("message-input");
+
+          // Initialize chatSocket
+          const protocol = window.location.protocol === 'https:' ? 'wss://' : 'ws://';
+          chatSocket = new WebSocket(`${protocol}${window.location.host}/ws/socket-server/`);
+          let username;
+
+          chatSocket.onopen = () => {
+              console.log("WebSocket connection established.");
+          };
+
+          chatSocket.onmessage = function (e) {
+            const data = JSON.parse(e.data);
+        
+            if (data.type === 'connection_established') {
+                username = data.username;
+                document.getElementById('player-name').value = username;
+            } else if (data.type === 'history') {
+                const messages = data.messages;
+                const messagesContainer = document.getElementById("messages");
+        
+                // Hiển thị lịch sử tin nhắn
+                messages.reverse().forEach((msg) => {
+                    const newMessage = document.createElement("div");
+                    newMessage.classList.add("message");
+        
+                    const avatar = document.createElement("img");
+                    avatar.src = msg.avatar || "/static/images/snake.png";
+                    avatar.alt = "Avatar";
+                    avatar.classList.add("message-avatar");
+        
+                    const contentDiv = document.createElement("div");
+                    contentDiv.classList.add("message-content");
+                    contentDiv.innerHTML = `<strong>${msg.username}:</strong> ${msg.message}`;
+        
+                    newMessage.appendChild(avatar);
+                    newMessage.appendChild(contentDiv);
+                    messagesContainer.appendChild(newMessage);
+                });
+            } else if (data.type === 'chat') {
+                const toggleChat = document.getElementById('toggle-chat');
+                const content = toggleChat.querySelector('.content');
+        
+                if (content) {
+                    content.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+                }
+        
+                toggleChat.classList.add('highlight');
+                setTimeout(() => {
+                    toggleChat.classList.remove('highlight');
+                }, 2000);
+        
+                const newMessage = document.createElement("div");
+                newMessage.classList.add("message");
+        
+                const avatar = document.createElement("img");
+                avatar.src = data.avatar;
+                avatar.alt = "Avatar";
+                avatar.classList.add("message-avatar");
+        
+                const contentDiv = document.createElement("div");
+                contentDiv.classList.add("message-content");
+                contentDiv.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+        
+                newMessage.appendChild(avatar);
+                newMessage.appendChild(contentDiv);
+                messages.appendChild(newMessage);
+            }
+          };
+
+          chatSocket.onerror = function (error) {
+              console.error("WebSocket error: ", error);
+          };
+
+          // Chat form submission
+          chatForm.addEventListener("submit", (e) => {
+              e.preventDefault();
+              const message = messageInput.value.trim();
+              if (message && chatSocket) {
+                  chatSocket.send(JSON.stringify({ message: message }));
+                  messageInput.value = "";
+              }
+          });
+
+          // Toggle chat visibility
+          toggleChat.addEventListener("click", () => {
+              chatContent.classList.toggle("hidden");
+          });
+
+          closeChat.addEventListener("click", () => {
+              chatContent.classList.add("hidden");
+          });
+      });
+
+
     </script>
     <script>
-      const sfxWing = new Audio("{% static 'media/sfx_wing.mp3' %}");
-      const sfxPoint = new Audio("{% static 'media/sfx_point.mp3' %}");
+        document.addEventListener("DOMContentLoaded", function() {
+            const highScoreElement = document.getElementById('high-score'); // Khai báo highScoreElement ở đầu
+        
+            const isUserAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+            if (isUserAuthenticated) {
+                // Lấy điểm cao nhất từ server khi người dùng đã đăng nhập
+                fetch("/get_user_high_score/")
+                    .then(response => response.json())
+                    .then(data => {
+                        highScoreElement.innerText = data.high_score || 0; // Hiển thị điểm cao nhất
+                    })
+                    .catch(error => console.error("Error fetching high score:", error));
+            } else {
+                highScoreElement.innerText = 0; // Nếu không đăng nhập, đặt về 0
+            }
+        
+            // Load and display the high score on page load
+            const highScore = localStorage.getItem('highScore');
+            if (highScore) {
+                highScoreElement.innerText = highScore; // Display the saved high score
+            } else {
+                highScoreElement.innerText = 0; // Display 0 if there is no saved score
+            }
+            
+            // Clear high score if user is not authenticated
+            if (!isUserAuthenticated) {
+                localStorage.removeItem('highScore');
+                highScoreElement.innerText = 0; // Reset display if user is not logged in
+            }
+            
+        });
+        
+        
+        // Update high score function
+        function updateHighScoreDisplay(score) {
+            const highScoreElement = document.getElementById('high-score');
+            highScoreElement.innerText = score; // Update the display with the latest score
+        }
+               
+        function loadHighScore() {
+            const highScoreElement = document.getElementById('high-score'); // Đảm bảo biến được khởi tạo trước khi sử dụng
+            const isUserAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+        
+            if (isUserAuthenticated) {
+                fetch("/get_user_high_score/")
+                    .then(response => response.json())
+                    .then(data => {
+                        highScore = data.high_score || 0; // Cập nhật biến highScore
+                        highScoreElement.innerText = highScore; // Hiển thị điểm cao nhất
+                    })
+                    .catch(error => console.error("Error fetching high score:", error));
+            } else {
+                highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore'), 10) : 0;
+                highScoreElement.innerText = highScore;
+            }
+        }
+        
+        // Modify saveHighScore function to update display
+        function saveHighScore(score) {
+            const isUserAuthenticated = {{ user.is_authenticated|yesno:"true,false" }};
+            
+            if (isUserAuthenticated) {
+                // Save to server if authenticated
+                fetch("/save_high_score/", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "X-CSRFToken": "{{ csrf_token }}",
+                    },
+                    body: JSON.stringify({ score: score })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log(data.message); // Log message from server
+                })
+                .catch(error => console.error("Error:", error));
+            } else {
+                // Save high score in Local Storage if not authenticated
+                let highScore = localStorage.getItem("highScore") ? parseInt(localStorage.getItem("highScore"), 10) : 0;
+                
+                if (score > highScore) {
+                    localStorage.setItem("highScore", score); // Save only if the score is higher
+                    updateHighScoreDisplay(score); // Update display in the top-right corner
+                }
+            }
+        }
+    
+    </script>
+    <script>
+      const sfxPointInstances = [new Audio("{% static 'media/sfx_point.mp3' %}"), new Audio("{% static 'media/sfx_point.mp3' %}"), new Audio("{% static 'media/sfx_point.mp3' %}")];
+      const sfxWingInstances = [new Audio("{% static 'media/sfx_wing.mp3' %}"), new Audio("{% static 'media/sfx_wing.mp3' %}"), new Audio("{% static 'media/sfx_wing.mp3' %}")];
       const sfxDie = new Audio("{% static 'media/sfx_die.mp3' %}");
-      const sfxSwooshing = new Audio("{% static 'media/sfx_swooshing.mp3' %}");
+      const sfxSwooshingInstances = [new Audio("{% static 'media/sfx_swooshing.mp3' %}"),new Audio("{% static 'media/sfx_swooshing.mp3' %}"),new Audio("{% static 'media/sfx_swooshing.mp3' %}")];
         sfxDie.addEventListener('canplaythrough', () => {
           console.log("Die sound loaded successfully");
       }, false);

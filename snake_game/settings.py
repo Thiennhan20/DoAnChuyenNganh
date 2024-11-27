@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 
 from pathlib import Path
+import os
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -24,15 +25,18 @@ SECRET_KEY = 'django-insecure-!@-=pt(vrjz)%xy#ey=owxv(@j_+y8y8wt+i366mf7)x3_pqx)
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+
+
 # SECURE_SSL_REDIRECT = True
 
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'snakegame2.loophole.site']
+#thêm 'snakegame2.loophole.site' khi cần chạy hostname
 
 CSRF_TRUSTED_ORIGINS = [
     'http://localhost:8000',
     'http://127.0.0.1:8000',
     'https://snakegame2.loophole.site',
-]#loophole http 8000 --hostname snakegame2(lệnh chạy trong cmd)
+]#('https://snakegame2.loophole.site',thêm vào dòng trên khi cần chạy hostname)--loophole http 8000 --hostname snakegame2(lệnh chạy trong cmd)
 
 AUTHENTICATION_BACKENDS = [
 
@@ -107,6 +111,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+MEDIA_URL = '/media/avatars/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 TEMPLATES = [
     {
@@ -141,10 +147,25 @@ CHANNEL_LAYERS = {
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'snake_game',  # Tên cơ sở dữ liệu
+        'USER': 'admin',       # Tên người dùng PostgreSQL
+        'PASSWORD': '123456',  # Mật khẩu của người dùng
+        'HOST': '127.0.0.1',   # Địa chỉ máy chủ PostgreSQL
+        'PORT': '5432',        # Cổng PostgreSQL (mặc định là 5432)
     }
 }
+
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6380/0",  # Địa chỉ Redis server
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    }
+}
+
 
 
 # Password validation
@@ -187,8 +208,16 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
-LOGIN_REDIRECT_URL = 'base'
-LOGOUT_REDIRECT_URL = 'base'
+LOGIN_REDIRECT_URL = '/'
+LOGOUT_REDIRECT_URL = '/'
+
+
+#------------- Đóng lại 4 dòng dưới nếu muốn đăng nhập fb và gg trên local-----------------------------------
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_AUTHENTICATION_METHOD = 'username_email'
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_VERIFICATION = 'optional'
+#------------------------------------------------------------------------------------------------------------
 SITE_ID = 1
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
