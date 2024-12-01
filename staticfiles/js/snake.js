@@ -35,15 +35,48 @@ document.getElementById('body-color').addEventListener('input', (event) => {
 document.getElementById('gradient-color-1').addEventListener('input', updateGradientPreview);
 document.getElementById('gradient-color-2').addEventListener('input', updateGradientPreview);
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.getElementById("leaderboard-button").addEventListener("click", function () {
-        document.getElementById("leaderboard-overlay").classList.remove("hidden");
+document.addEventListener('DOMContentLoaded', function () {
+    const emojiButton = document.getElementById("emoji-button");
+    const emojiPicker = document.getElementById("emoji-picker");
+    const messageInput = document.getElementById("message-input");
+    const sendButton = document.getElementById("send-button");
+    const chatForm = document.getElementById("chat-form");
+  
+    // Toggle emoji picker visibility
+    emojiButton.addEventListener("click", function (event) {
+      event.stopPropagation();
+      emojiPicker.style.display = emojiPicker.style.display === "none" ? "block" : "none";
+    });
+  
+    // Insert emoji into message input
+    emojiPicker.addEventListener("click", function (event) {
+      if (event.target.classList.contains("emoji")) {
+        const emoji = event.target.getAttribute("data-emoji");
+        messageInput.value += emoji;
+        emojiPicker.style.display = "none";  // Hide emoji picker after selection
+      }
+    });
+  
+    // Handle form submission (sending the message)
+    chatForm.addEventListener("submit", function (event) {
+      event.preventDefault();
+      const message = messageInput.value.trim();
+      if (message) {
+        // Gửi tin nhắn qua WebSocket
+        const socket = new WebSocket("ws://your-websocket-url/");
+        socket.send(JSON.stringify({ message: message }));
+        messageInput.value = "";  // Clear input
+      }
     });
 
-    document.getElementById("close-leaderboard").addEventListener("click", function () {
-        document.getElementById("leaderboard-overlay").classList.add("hidden");
+    // Close emoji picker when clicking anywhere else
+    document.addEventListener("click", function (event) {
+      if (!emojiButton.contains(event.target) && !emojiPicker.contains(event.target)) {
+        emojiPicker.style.display = "none";  // Hide emoji picker if clicked outside
+      }
     });
 });
+  
 
 
 // Áp dụng màu sắc mới khi nhấn nút "Áp Dụng"
@@ -100,19 +133,71 @@ document.addEventListener("DOMContentLoaded", function() {
     const settingsButton = document.getElementById('bottom-left').querySelector('.btn-icon');
     const settingsMenu = document.getElementById('settings-menu');
     const closeSettingsButton = document.getElementById('close-settings');
+    const controlButton = document.querySelector("#settings-menu .btn-icon:nth-child(1)"); // Nút "Điều Khiển"
+    const controlSettingsOverlay = document.getElementById("control-settings-overlay");
+    const applyControlSettingsButton = document.getElementById("apply-control-settings");
+    const cancelControlSettingsButton = document.getElementById("cancel-control-settings");
+    const leaderboardButton = document.getElementById("leaderboard-button");
+    const closeLeaderboardButton = document.getElementById("close-leaderboard");
+    const leaderboardOverlay = document.getElementById("leaderboard-overlay");
+    const timeframeSelect = document.getElementById("timeframe");
+
     
+
     settingsButton.addEventListener('click', () => {
-        console.log("Settings button clicked");
         settingsMenu.classList.add('active');
         settingsMenu.classList.remove('hidden');
     });
-    
-    
+
     closeSettingsButton.addEventListener('click', () => {
         settingsMenu.classList.remove('active');
         setTimeout(() => settingsMenu.classList.add('hidden'), 500); // Hide after animation
     });
+
+    // Khi bấm vào bảng xếp hạng, đặt lại mốc thời gian về "all_time"
+    leaderboardButton.addEventListener("click", function () {
+        // Reset dropdown mốc thời gian về "all_time"
+        timeframeSelect.value = "all_time"; 
+        // Tải dữ liệu bảng xếp hạng cho "all_time"
+        updateLeaderboard("all_time");
+        leaderboardOverlay.classList.remove("hidden");
+    });
+
+    // Gọi hàm khi người dùng thay đổi khung thời gian
+    timeframeSelect.addEventListener("change", function (event) {
+        const timeframe = event.target.value; // Lấy giá trị từ dropdown
+        updateLeaderboard(timeframe); // Truyền giá trị vào hàm
+    });
+
+    // Khi đóng bảng xếp hạng
+    closeLeaderboardButton.addEventListener("click", function () {
+        leaderboardOverlay.classList.add("hidden");
+    });
+
+    // Hiển thị bảng thiết lập khi bấm nút
+    controlButton.addEventListener("click", () => {
+        controlSettingsOverlay.classList.remove("hidden");
+    });
+
+    // Ẩn bảng thiết lập khi bấm nút "Hủy"
+    cancelControlSettingsButton.addEventListener("click", () => {
+        controlSettingsOverlay.classList.add("hidden");
+    });
+
+    // Lưu thiết lập điều khiển khi bấm nút "Đồng ý"
+    applyControlSettingsButton.addEventListener("click", () => {
+        const selectedControl = document.querySelector('input[name="control-method"]:checked').value;
+        localStorage.setItem("controlMethod", selectedControl); // Lưu vào LocalStorage
+        alert(`Bạn đã chọn điều khiển bằng: ${selectedControl === "mouse" ? "Mouse" : "Bàn phím"}`);
+        controlSettingsOverlay.classList.add("hidden");
+    });
+
 });
+
+
+
+
+
 
 
 
@@ -185,6 +270,12 @@ let totalPlayTime = 0;
 const chatBox = document.getElementById('chat-box');
 const toggleChat = document.getElementById('toggle-chat');
 const closeChat = document.getElementById('close-chat');
+let currentRequest = null; // Biến toàn cục để theo dõi yêu cầu hiện tại
+
+
+
+
+
 
 toggleChat.addEventListener('click', () => {
     chatBox.classList.add('expanded');
@@ -225,9 +316,7 @@ function playBoostSound() {
 function playMusic() {
     backgroundMusic.play().then(() => {
         isMusicPlaying = true;
-    }).catch(error => {
-        console.error("Lỗi khi phát nhạc:", error);
-    });
+    })
 }
 
 // Hàm tạm dừng nhạc nền
@@ -547,7 +636,6 @@ function checkCollision() {
     // Check collision with body segments
     for (let i = 1; i < snake.length; i++) {
         if (head.x === snake[i].x && head.y === snake[i].y) {
-            console.log("Collision with body detected, playing die sound.");
             sfxDie.play();
             return true;
         }
@@ -555,7 +643,6 @@ function checkCollision() {
 
     // Check collision with the edges of the canvas
     if (head.x < 0 || head.x >= canvas.width || head.y < 0 || head.y >= canvas.height) {
-        console.log("Boundary collision detected, playing die sound.");
         sfxDie.play(); // Play the die sound when hitting the edges
         return true;
     }
@@ -695,11 +782,12 @@ function getRandomFoodType() {
 
 function changeDirection(event) {
     const { key } = event;
-    if (key === 'ArrowUp' && direction.y === 0) direction = { x: 0, y: -10 };
-    else if (key === 'ArrowDown' && direction.y === 0) direction = { x: 0, y: 10 };
-    else if (key === 'ArrowLeft' && direction.x === 0) direction = { x: -10, y: 0 };
-    else if (key === 'ArrowRight' && direction.x === 0) direction = { x: 10, y: 0 };
+    if ((key === 'ArrowUp' || key === 'w') && direction.y === 0) direction = { x: 0, y: -10 };
+    else if ((key === 'ArrowDown' || key === 's') && direction.y === 0) direction = { x: 0, y: 10 };
+    else if ((key === 'ArrowLeft' || key === 'a') && direction.x === 0) direction = { x: -10, y: 0 };
+    else if ((key === 'ArrowRight' || key === 'd') && direction.x === 0) direction = { x: 10, y: 0 };
 }
+
 
 document.addEventListener('keydown', changeDirection);
 
@@ -846,34 +934,74 @@ function resetGame() {
     clearInterval(gameInterval); // Ensures no lingering game intervals
 }
 
-function updateLeaderboard() {
-    const timeframe = document.getElementById("timeframe").value;
-    fetch(`/get_high_scores/?timeframe=${timeframe}`)
+function updateLeaderboard(timeframe = "all_time") {
+    let url;
+    switch (timeframe) {
+        case "daily":
+            url = "/get_high_scores_daily/";
+            break;
+        case "weekly":
+            url = "/get_high_scores_weekly/";
+            break;
+        default:
+            url = "/get_high_scores_all_time/";
+    }
+
+    if (currentRequest) {
+        currentRequest.abort(); // Hủy yêu cầu cũ
+    }
+
+    const abortController = new AbortController();
+    currentRequest = abortController;
+
+    fetch(url, { signal: abortController.signal })
         .then(response => response.json())
         .then(data => {
-            const leaderboardList = document.getElementById("leaderboard-list").getElementsByTagName('tbody')[0];
-            leaderboardList.innerHTML = ''; // Xóa các hàng cũ
+            const leaderboardTableBody = document.querySelector("#leaderboard-table tbody");
+            const currentUserElement = document.getElementById("current-username");
 
-            data.forEach(item => {
-                const row = leaderboardList.insertRow();
-                
-                const usernameCell = row.insertCell();
-                usernameCell.textContent = item.username;
+            // Kiểm tra nếu phần tử current-username không tồn tại
+            if (!currentUserElement) {
+                console.error('Không tìm thấy phần tử current-username');
+                return;
+            }
 
-                const scoreCell = row.insertCell();
-                scoreCell.textContent = item.score;
+            const currentUser = currentUserElement.innerText;
 
-                const levelsCell = row.insertCell();
-                levelsCell.textContent = item.levels_completed;
+            if (!leaderboardTableBody) {
+                return;
+            }
 
-                const timeCell = row.insertCell();
-                const minutes = Math.floor(item.total_play_time / 60);
-                const seconds = item.total_play_time % 60;
-                timeCell.textContent = `${minutes}:${seconds.toString().padStart(2, '0')}`; // Hiển thị dưới dạng phút:giây
+            leaderboardTableBody.innerHTML = "";
+
+            if (data.length === 0) {
+                leaderboardTableBody.innerHTML = `<tr><td colspan="3">Không có dữ liệu xếp hạng</td></tr>`;
+                return;
+            }
+
+            data.forEach((entry, index) => {
+                const row = document.createElement("tr");
+                const isCurrentUser = entry.username === currentUser ? 'highlight' : '';
+
+                if (isCurrentUser) {
+                    row.classList.add(isCurrentUser);
+                }
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.username}</td>
+                    <td>${entry.high_score}</td>
+                `;
+                leaderboardTableBody.appendChild(row);
             });
         })
-        .catch(error => console.error("Error fetching leaderboard:", error));
+        .catch(error => {
+            if (error.name !== 'AbortError') {
+                console.error("Error fetching leaderboard data:", error);
+            }
+        });
 }
+
+
 
 
 // Hàm để khởi tạo và đặt vị trí chướng ngại vật

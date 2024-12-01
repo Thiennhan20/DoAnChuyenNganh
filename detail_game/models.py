@@ -20,8 +20,11 @@ class HighScore(models.Model):
     day = models.CharField(max_length=10, blank=True, null=True)  # Trường lưu ngày
     week = models.IntegerField(blank=True, null=True)  # Trường lưu tuần
 
-    def __str__(self):
-        return f"{self.user.username}: {self.score}"
+    def save(self, *args, **kwargs):
+        # Log giá trị `day` và `week`
+        print(f"Saving HighScore: {self.user.username}, Day: {self.day}, Week: {self.week}")
+        super().save(*args, **kwargs)
+
     
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)

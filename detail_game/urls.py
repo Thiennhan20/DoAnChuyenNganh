@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import  base, get_high_scores, save_high_score, user_info, get_user_high_score
+from .views import  base, save_high_score, user_info, get_user_high_score
 from django.contrib.auth import views as auth_views
 from django.conf.urls.static import static
 from django.conf import settings
@@ -8,10 +8,10 @@ from . import views
 
 urlpatterns = [
     path('', base, name="base"),
-    path('get_high_scores/', get_high_scores, name='get_high_scores'),
     path('get_user_high_score/', get_user_high_score, name='get_user_high_score'),
     path('get_high_scores_daily/', views.get_high_scores_daily, name='get_high_scores_daily'),
     path('get_high_scores_weekly/', views.get_high_scores_weekly, name='get_high_scores_weekly'),
+    path('get_high_scores_all_time/', views.get_high_scores_all_time, name='get_high_scores_all_time'),
     path('save_high_score/', save_high_score, name='save_high_score'),
     path('user_info/', user_info, name='user_info'),
     path('reset_password/', auth_views.PasswordResetView.as_view(template_name="detail_game/password_reset.html"), name="reset_password"),

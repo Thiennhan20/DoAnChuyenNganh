@@ -69,7 +69,7 @@
 
     <div id="main-container">
       <header>
-        <h1>SNAKE.FAKE</h1>
+        <h1 id="logo">SNAKE.FAKE</h1>
       </header>
       <div id="game-settings">
         <div id="play-area">
@@ -88,6 +88,31 @@
         </div>
       </div>
     </div>
+
+    <div id="multi-play-container" class="hidden">
+      <div class="multi-play-area">
+          <!-- Phần vào phòng -->
+          <div class="join-room">
+              <h3>Vào phòng</h3>
+              <label for="join-room-code">Mã phòng:</label>
+              <input type="text" id="join-room-code" placeholder="Nhập mã phòng" />
+              <button id="join-room-btn" class="btn-icon">Vào phòng</button>
+          </div>
+          <!-- Phần tạo phòng -->
+          <div class="create-room">
+              <h3>Tạo phòng</h3>
+              <label for="create-room-name">Tên phòng:</label>
+              <input type="text" id="create-room-name" placeholder="Nhập tên phòng" />
+              <button id="create-room-btn" class="btn-icon">Tạo phòng</button>
+          </div>
+          <button id="back-to-main-button" class="btn-icon">
+            <i class="fas fa-times"></i> <!-- Icon "X" -->
+          </button>
+      </div>
+    </div>
+    
+
+    
     <div id="chat-box">
       <div id="toggle-chat">
         <div class="icon">
@@ -105,13 +130,99 @@
         </div>
         <div class="chat-input">
           <form id="chat-form" style="width: 100%; display: flex; gap: 10px;">
+              <button type="button" id="emoji-button">
+                <i class="fas fa-smile"></i>
+              </button>
               <input type="text" id="message-input" placeholder="Enter your message..." autocomplete="off" />
               <button type="submit" id="send-button">
                   <i class="fas fa-paper-plane"></i>
               </button>
           </form>
         </div>
+        <div id="emoji-picker" style="display: none;">
+          <!-- Cảm xúc -->
+          <span class="emoji" data-emoji="😊">😊</span>
+          <span class="emoji" data-emoji="😂">😂</span>
+          <span class="emoji" data-emoji="😍">😍</span>
+          <span class="emoji" data-emoji="😎">😎</span>
+          <span class="emoji" data-emoji="😢">😢</span>
+          <span class="emoji" data-emoji="😡">😡</span>
+          <span class="emoji" data-emoji="😜">😜</span>
+          <span class="emoji" data-emoji="😱">😱</span>
+          <span class="emoji" data-emoji="🤔">🤔</span>
+          <span class="emoji" data-emoji="🥺">🥺</span>
+          <span class="emoji" data-emoji="🤩">🤩</span>
+          <span class="emoji" data-emoji="🤯">🤯</span>
+          <span class="emoji" data-emoji="🥳">🥳</span>
       
+          <!-- Hành động -->
+          <span class="emoji" data-emoji="👋">👋</span>
+          <span class="emoji" data-emoji="👏">👏</span>
+          <span class="emoji" data-emoji="👍">👍</span>
+          <span class="emoji" data-emoji="👎">👎</span>
+          <span class="emoji" data-emoji="💪">💪</span>
+          <span class="emoji" data-emoji="✋">✋</span>
+          <span class="emoji" data-emoji="🖖">🖖</span>
+      
+          <!-- Động vật -->
+          <span class="emoji" data-emoji="🐶">🐶</span>
+          <span class="emoji" data-emoji="🐱">🐱</span>
+          <span class="emoji" data-emoji="🐰">🐰</span>
+          <span class="emoji" data-emoji="🦁">🦁</span>
+          <span class="emoji" data-emoji="🐯">🐯</span>
+          <span class="emoji" data-emoji="🐭">🐭</span>
+          <span class="emoji" data-emoji="🐼">🐼</span>
+          <span class="emoji" data-emoji="🦄">🦄</span>
+          <span class="emoji" data-emoji="🐸">🐸</span>
+          <span class="emoji" data-emoji="🐵">🐵</span>
+          <span class="emoji" data-emoji="🦉">🦉</span>
+      
+          <!-- Các biểu tượng -->
+          <span class="emoji" data-emoji="🔥">🔥</span>
+          <span class="emoji" data-emoji="💀">💀</span>
+          <span class="emoji" data-emoji="🎮">🎮</span>
+          <span class="emoji" data-emoji="⚔️">⚔️</span>
+          <span class="emoji" data-emoji="🎯">🎯</span>
+          <span class="emoji" data-emoji="🧠">🧠</span>
+          <span class="emoji" data-emoji="💎">💎</span>
+          <span class="emoji" data-emoji="🏆">🏆</span>
+          <span class="emoji" data-emoji="🕹️">🕹️</span>
+          <span class="emoji" data-emoji="🎁">🎁</span>
+          <span class="emoji" data-emoji="💌">💌</span>
+      
+          <!-- Biểu tượng tình yêu -->
+          <span class="emoji" data-emoji="❤️">❤️</span>
+          <span class="emoji" data-emoji="💛">💛</span>
+          <span class="emoji" data-emoji="💚">💚</span>
+          <span class="emoji" data-emoji="💙">💙</span>
+          <span class="emoji" data-emoji="💜">💜</span>
+          <span class="emoji" data-emoji="💔">💔</span>
+          <span class="emoji" data-emoji="😘">😘</span>
+          <span class="emoji" data-emoji="🥰">🥰</span>
+      
+          <!-- Thực phẩm và đồ uống -->
+          <span class="emoji" data-emoji="🍔">🍔</span>
+          <span class="emoji" data-emoji="🍕">🍕</span>
+          <span class="emoji" data-emoji="🍟">🍟</span>
+          <span class="emoji" data-emoji="🍩">🍩</span>
+          <span class="emoji" data-emoji="🍺">🍺</span>
+          <span class="emoji" data-emoji="🍷">🍷</span>
+          <span class="emoji" data-emoji="🍾">🍾</span>
+          <span class="emoji" data-emoji="🍦">🍦</span>
+          <span class="emoji" data-emoji="🥤">🥤</span>
+          <span class="emoji" data-emoji="🍓">🍓</span>
+      
+          <!-- Thiết bị và đồ công nghệ -->
+          <span class="emoji" data-emoji="💻">💻</span>
+          <span class="emoji" data-emoji="📱">📱</span>
+          <span class="emoji" data-emoji="⌚">⌚</span>
+          <span class="emoji" data-emoji="🎧">🎧</span>
+          <span class="emoji" data-emoji="📸">📸</span>
+          <span class="emoji" data-emoji="💡">💡</span>
+          <span class="emoji" data-emoji="🔋">🔋</span>
+        </div>
+      
+        
         <i class="fas fa-times close-icon" id="close-chat"></i>
       </div>
     </div>
@@ -142,32 +253,62 @@
             <i class="fas fa-trophy"></i>
             <span>BẢNG XẾP HẠNG</span>
           </button>
-          
+          <div id="control-settings-overlay" class="hidden">
+            <div id="control-settings-container">
+                <h2>Chọn thiết lập bộ điều khiển của bạn:</h2>
+                <div class="control-options">
+                    <div class="control-option">
+                        <input type="radio" id="control-mouse" name="control-method" value="mouse" checked />
+                        <label for="control-mouse">
+                            <i class="fas fa-mouse" style="font-size: 50px; color: #4CAF50;"></i>
+                            <span>Mouse</span>
+                        </label>
+                    </div>
+                    <div class="control-option">
+                        <input type="radio" id="control-keyboard" name="control-method" value="keyboard" />
+                        <label for="control-keyboard">
+                            <i class="fas fa-keyboard" style="font-size: 50px; color: #f44336;"></i>
+                            <span>Keyboard (WASD)</span>
+                        </label>
+                    </div>
+                </div>
+                <button id="apply-control-settings" class="apply-btn">Đồng ý</button>
+                <button id="cancel-control-settings" class="cancel-btn">Hủy</button>
+            </div>
+          </div>
+        
           <div id="leaderboard-overlay" class="hidden">
-              <div id="leaderboard-container">
-                  <div class="dropdown-container">
+            <div id="leaderboard-container">
+                <div class="dropdown-container">
                     <label for="timeframe">Chọn Thời Gian:</label>
                     <select id="timeframe" onchange="updateLeaderboard()">
+                        <option value="all_time">Tất cả thời gian</option>
                         <option value="weekly">Hàng tuần</option>
                         <option value="daily">Hàng ngày</option>
-                        <option value="all_time">Tất cả thời gian</option>
                     </select>
-                  </div>
-                  <h2>Bảng Xếp Hạng</h2>
-                  <ul id="leaderboard-list">
-                      {% comment %} <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <li><span>01 akbar</span> <span>275,994,684</span></li>
-                      <!-- Additional entries --> {% endcomment %}
-                  </ul>
-                  <div style="display: flex; justify-content: center; margin-top: 20px;">
+                </div>
+                <h2>Bảng Xếp Hạng</h2>
+                <table id="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Hạng</th>
+                            <th>Tên Người Chơi</th>
+                            <th>Điểm Cao</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <!-- Nội dung được thêm động qua JavaScript -->
+                        <span id="current-username" style="display:none;">{{ user.username }}</span>
+
+                    </tbody>
+                </table>
+              
+                <div style="display: flex; justify-content: center; margin-top: 20px;">
                     <button id="close-leaderboard" class="btn-icon">Đóng</button>
                 </div>
-              </div>
+            </div>
           </div>
+        
         
         </div>
         <div class="row">
@@ -199,16 +340,13 @@
     </div>
     
     
-    <div id="bottom-right">
-      <button class="btn-icon">
-        <i class="fab fa-facebook-f"></i>
-        <span>CHIA SẺ</span>
-      </button>
-      <button class="btn-icon">
-        <i class="fab fa-twitter"></i>
-        <span>CHIA SẺ</span>
+    <div id="bottom-right"> 
+      <button class="btn-icon" id="shareButton">
+          <i class="fas fa-share-alt"></i>  <!-- Icon chia sẻ -->
+          <span>CHIA SẺ</span>
       </button>
     </div>
+  
 
     <div id="game-over-screen" class="hidden">
       <div id="stats">
@@ -243,52 +381,7 @@
   
     <canvas id="gameCanvas" width="800" height="600" style="display: none;"></canvas>
     <script src="{% static 'js/snake.js' %}"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-          const leaderboardTimeframe = document.getElementById("leaderboard-timeframe");
-          const leaderboardList = document.getElementById("leaderboard-list");
-      
-          if (!leaderboardTimeframe || !leaderboardList) {
-              console.error("Leaderboard elements not found.");
-              return;
-          }
-      
-          function fetchLeaderboard(timeframe) {
-            const url =
-                timeframe === "daily"
-                    ? "/get_high_scores_daily/"
-                    : "/get_high_scores_weekly/";
-        
-            fetch(url)
-                .then((response) => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then((data) => {
-                    leaderboardList.innerHTML = ""; // Xóa danh sách cũ
-                    data.forEach((entry, index) => {
-                        const listItem = document.createElement("li");
-                        listItem.innerText = `${index + 1}. ${entry.username} - ${entry.high_score}`;
-                        leaderboardList.appendChild(listItem);
-                    });
-                })
-                .catch((error) => {
-                    console.error("Error fetching leaderboard:", error);
-                    alert("Không thể tải bảng xếp hạng. Vui lòng thử lại sau!");
-                });
-        }
-        
-      
-          leaderboardTimeframe.addEventListener("change", (e) => {
-              fetchLeaderboard(e.target.value);
-          });
-      
-          fetchLeaderboard("daily");
-      });
-    
-    </script>
+    <script src="{% static 'js/snake_multiplayer.js' %}"></script>
     <script type="text/javascript">
       // JavaScript to manage WebSocket connection and UI interactions
       let chatSocket; // Declare chatSocket in the global scope
@@ -408,7 +501,6 @@
                     .then(data => {
                         highScoreElement.innerText = data.high_score || 0; // Hiển thị điểm cao nhất
                     })
-                    .catch(error => console.error("Error fetching high score:", error));
             } else {
                 highScoreElement.innerText = 0; // Nếu không đăng nhập, đặt về 0
             }
@@ -447,7 +539,6 @@
                         highScore = data.high_score || 0; // Cập nhật biến highScore
                         highScoreElement.innerText = highScore; // Hiển thị điểm cao nhất
                     })
-                    .catch(error => console.error("Error fetching high score:", error));
             } else {
                 highScore = localStorage.getItem('highScore') ? parseInt(localStorage.getItem('highScore'), 10) : 0;
                 highScoreElement.innerText = highScore;
@@ -470,9 +561,7 @@
                 })
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data.message); // Log message from server
                 })
-                .catch(error => console.error("Error:", error));
             } else {
                 // Save high score in Local Storage if not authenticated
                 let highScore = localStorage.getItem("highScore") ? parseInt(localStorage.getItem("highScore"), 10) : 0;
@@ -491,9 +580,22 @@
       const sfxDie = new Audio("{% static 'media/sfx_die.mp3' %}");
       const sfxSwooshingInstances = [new Audio("{% static 'media/sfx_swooshing.mp3' %}"),new Audio("{% static 'media/sfx_swooshing.mp3' %}"),new Audio("{% static 'media/sfx_swooshing.mp3' %}")];
         sfxDie.addEventListener('canplaythrough', () => {
-          console.log("Die sound loaded successfully");
       }, false);
     </script>
-  
+
+  <script>
+        const shareButton = document.getElementById('shareButton');
+        shareButton.addEventListener('click', async () => {
+          try{
+              await navigator.share({
+                title: 'SnakeGame',
+                text: 'Trang web này an toàn',
+                url: 'https://snakegame2.loophole.site'
+              });
+          }catch(error){
+
+          }
+        });
+  </script>
   </body>
 </html>

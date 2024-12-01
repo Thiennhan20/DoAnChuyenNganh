@@ -12,7 +12,7 @@ from django.dispatch import receiver
 from django.contrib.auth.models import User
 from .models import UserProfile, ChatMessage
 from datetime import datetime
-from django.utils.timezone import now
+from django.utils.timezone import now, localtime
 from django.contrib.auth.signals import user_logged_in
 
 
@@ -26,18 +26,6 @@ def base(request):
         username = f"Guest{random.randint(1000, 9999)}"
     return render(request, 'detail_game/base.html', {'username': username})
 
-def get_high_scores(request):
-    # Lọc bảng xếp hạng trong ngày hiện tại
-    today = now().strftime('%d/%m/%Y')
-    scores = HighScore.objects.filter(day=today).order_by('-score')[:10]
-    score_data = [
-        {
-            "username": score.user.username,
-            "score": score.score,
-        }
-        for score in scores
-    ]
-    return JsonResponse(score_data, safe=False)
 
 @login_required
 def get_user_high_score(request):
@@ -58,12 +46,15 @@ def save_high_score(request):
         # Find the current high score record for the user
         highest_score_record = HighScore.objects.filter(user=user).order_by('-score').first()
 
+        current_day = now().strftime('%d/%m/%Y')  # Ngày hiện tại
+        current_week = now().isocalendar()[1]  # Tuần hiện tại
+
         if highest_score_record:
             if new_score > highest_score_record.score:
                 highest_score_record.score = new_score
                 highest_score_record.date = now()  # Cập nhật thời gian hiện tại
-                highest_score_record.day = now().strftime('%d/%m/%Y')  # Lưu ngày hiện tại
-                highest_score_record.week = now().isocalendar()[1]  # Lưu tuần hiện tại
+                highest_score_record.day = current_day  # Cập nhật ngày
+                highest_score_record.week = current_week  # Cập nhật tuần
                 highest_score_record.save()
                 return JsonResponse({"message": "High score updated successfully!"})
             else:
@@ -73,11 +64,12 @@ def save_high_score(request):
             HighScore.objects.create(
                 user=user,
                 score=new_score,
-                day=now().strftime('%d/%m/%Y'),  # Gán ngày hiện tại
-                week=now().isocalendar()[1]  # Gán tuần hiện tại
+                day=current_day,  # Gán ngày hiện tại
+                week=current_week  # Gán tuần hiện tại
             )
             return JsonResponse({"message": "New high score saved successfully!"})
     return JsonResponse({"message": "Invalid request"}, status=400)
+
 
 
 @receiver(post_save, sender=User)
@@ -143,25 +135,8 @@ def move_guest_messages_to_db(sender, request, user, **kwargs):
 
 
 def get_high_scores_daily(request):
-    try:
-        today = now().strftime('%d/%m/%Y')
-        scores = HighScore.objects.filter(day=today).order_by('-score')[:10]
-        score_data = [
-            {
-                "username": score.user.username,
-                "high_score": score.score,
-            }
-            for score in scores
-        ]
-        return JsonResponse(score_data, safe=False)
-    except Exception as e:
-        print(f"Error in get_high_scores_daily: {e}")
-        return JsonResponse({"error": "Internal server error"}, status=500)
-
-
-def get_high_scores_weekly(request):
-    current_week = now().isocalendar()[1]
-    scores = HighScore.objects.filter(week=current_week).order_by('-score')[:10]
+    today = localtime(now()).strftime('%d/%m/%Y')
+    scores = HighScore.objects.filter(day=today).order_by('-score')[:100]
     score_data = [
         {
             "username": score.user.username,
@@ -170,3 +145,29 @@ def get_high_scores_weekly(request):
         for score in scores
     ]
     return JsonResponse(score_data, safe=False)
+
+
+
+def get_high_scores_weekly(request):
+    current_week = now().isocalendar()[1]
+    scores = HighScore.objects.filter(week=current_week).order_by('-score')[:100]
+    score_data = [
+        {
+            "username": score.user.username,
+            "high_score": score.score,
+        }
+        for score in scores
+    ]
+    return JsonResponse(score_data, safe=False)
+
+def get_high_scores_all_time(request):
+        scores = HighScore.objects.all().order_by('-score')[:100]
+        score_data = [
+            {
+                "username": score.user.username,
+                "high_score": score.score,
+            }
+            for score in scores
+        ]
+        return JsonResponse(score_data, safe=False)
+

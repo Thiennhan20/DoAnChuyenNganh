@@ -19,20 +19,42 @@ body {
     justify-content: center;
     align-items: center;
     height: 100vh;
-    background: linear-gradient(135deg, #74ebd5, #9face6); /* Gradient */
+    margin: 0;
     font-family: 'Oswald', sans-serif;
     position: relative;
-    animation: backgroundMove 10s infinite alternate; /* Thêm animation */
+    overflow: hidden;
+    background: linear-gradient(135deg, #74ebd5 25%, #9face6 75%); /* Gradient động */
+    background-size: 200% 200%; /* Kích thước gradient lớn */
+    animation: gradientMove 10s ease-in-out infinite; 
 }
 
-@keyframes backgroundMove {
+@keyframes gradientMove {
     0% {
         background-position: 0% 50%;
     }
-    100% {
+    50% {
         background-position: 100% 50%;
     }
+    100% {
+        background-position: 0% 50%;
+    }
 }
+
+
+/* Thêm lớp bóng mờ để tạo chiều sâu, giống như sương mù hoặc bóng tối trong rừng */
+body::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: radial-gradient(circle, rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.8)); /* Mờ tối tạo cảm giác mờ ảo */
+    filter: blur(8px); /* Mờ nền để tạo không khí u ám */
+    z-index: -1;
+    animation: gradientMove 3s ease-in-out infinite;
+}
+
 
 #main-container {
     text-align: center;
@@ -46,6 +68,82 @@ body {
 header h1 {
     font-size: 3rem;
     margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+
+#logo span {
+    display: inline-block;
+    opacity: 0;
+    transform: translateY(20px);
+    animation: slide-up 1s forwards, bounce 2s ease-in-out infinite; /* Thêm 'ease-in-out' để mượt mà hơn */
+}
+
+@keyframes slide-up {
+    0% {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes bounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    25% {
+        transform: translateY(-5px); /* Uốn lượn nhẹ lên trên */
+    }
+    50% {
+        transform: translateY(-10px); /* Uốn lượn lên trên */
+    }
+    75% {
+        transform: translateY(-5px); /* Quay lại từ từ */
+    }
+}
+
+/* Tạo delay khác nhau cho mỗi chữ */
+#logo span:nth-child(1) {
+    animation-delay: 0s;
+}
+
+#logo span:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+#logo span:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+#logo span:nth-child(4) {
+    animation-delay: 0.6s;
+}
+
+#logo span:nth-child(5) {
+    animation-delay: 0.8s;
+}
+
+#logo span:nth-child(6) {
+    animation-delay: 1s;
+}
+
+#logo span:nth-child(7) {
+    animation-delay: 1.2s;
+}
+
+#logo span:nth-child(8) {
+    animation-delay: 1.4s;
+}
+
+#logo span:nth-child(9) {
+    animation-delay: 1.6s;
 }
 
 #play-area {
@@ -135,10 +233,21 @@ header h1 {
 }
 
 #top-right {
+    position: absolute;
     top: 10px;
     right: 10px;
     font-size: 1rem;
     color: #000;
+    text-shadow: 0 0 15px rgba(255, 255, 255, 2.5), 0 0 10px rgba(255, 255, 255, 1.5), 0 0 15px rgba(255, 255, 255, 0.8);
+    /* Tạo hiệu ứng phát sáng xung quanh chữ */
+    transition: all 0.3s ease; /* Hiệu ứng chuyển động mượt mà khi thay đổi */
+}
+
+/* Thêm hiệu ứng khi hover hoặc khi ở ngoài background */
+#top-right:hover {
+    color: #ff0; /* Đổi màu chữ khi hover */
+    text-shadow: 0 0 10px rgba(255, 255, 255, 1), 0 0 20px rgba(255, 255, 0, 1), 0 0 30px rgba(255, 255, 0, 1);
+    /* Tăng cường hiệu ứng phát sáng khi hover */
 }
 
 #bottom-left {
@@ -233,55 +342,93 @@ canvas {
 #skin-picker-container {
     background: #fff;
     padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    border-radius: 12px;
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
     text-align: center;
-    max-width: 500px;
-    width: 80%;
+    max-width: 600px;
+    width: 90%;
+    transition: transform 0.3s ease;
+}
+
+#skin-picker-container h2 {
+    margin-bottom: 20px;
+    font-size: 1.6rem;
+    color: #333;
+    font-weight: bold;
 }
 
 .color-picker {
     display: flex;
     align-items: center;
-    justify-content: space-around;
-    margin: 10px 0;
+    justify-content: space-between;
+    margin: 15px 0;
+}
+
+.color-picker label {
+    font-size: 1rem;
+    color: #555;
+}
+
+.color-picker input {
+    width: 80px;
+    height: 40px;
+    border: 2px solid #ccc;
+    border-radius: 5px;
+    margin-left: 10px;
+    cursor: pointer;
 }
 
 #snake-preview {
     display: flex;
-    align-items: center;
     justify-content: center;
+    align-items: center;
     margin: 20px 0;
 }
 
 #preview-snake-head, #preview-snake-body {
-    width: 30px;
-    height: 30px;
+    width: 40px;
+    height: 40px;
     border-radius: 50%;
     margin: 5px;
 }
 
+.button-group {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 25px;
+}
+
 .apply-btn, .cancel-btn {
-    margin-top: 20px;
-    padding: 10px 20px;
+    padding: 12px 24px;
     border: none;
     color: white;
     cursor: pointer;
-    font-size: 1rem;
-    border-radius: 5px;
+    font-size: 1.1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    width: 45%;
 }
 
 .apply-btn {
     background-color: #28a745;
 }
 
+.apply-btn:hover {
+    background-color: #218838;
+}
+
 .cancel-btn {
     background-color: #dc3545;
+}
+
+.cancel-btn:hover {
+    background-color: #c82333;
 }
 
 .hidden {
     display: none;
 }
+
 
 #settings-menu {
     position: fixed;
@@ -374,9 +521,16 @@ canvas {
 }
 
 /* Bottom Right Button Customizations */
+/* Định dạng ban đầu cho các button */
 #bottom-right .btn-icon,
 #bottom-left .btn-icon {
     background-color: #ff6b6b;
+    padding: 15px; /* Padding vừa phải cho button */
+    border-radius: 50%; /* Nếu bạn muốn button tròn */
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 #bottom-right .btn-icon:hover,
@@ -384,23 +538,58 @@ canvas {
     background-color: #e55b5b;
 }
 
-/* Social Media Icon Colors */
-#bottom-right .btn-icon .fab.fa-facebook-f {
-    color: #3b5998;
+/* Media query cho màn hình nhỏ */
+@media (max-width: 600px) {
+    #bottom-right .btn-icon,
+    #bottom-left .btn-icon {
+        padding: 10px; /* Giảm padding khi màn hình nhỏ */
+        transform: scale(0.8); /* Thu nhỏ button lại */
+    }
 }
 
-#bottom-right .btn-icon .fab.fa-twitter {
-    color: #1DA1F2;
+/* Media query cho màn hình cực nhỏ (ví dụ: trên di động cực nhỏ) */
+@media (max-width: 400px) {
+    #bottom-right .btn-icon,
+    #bottom-left .btn-icon {
+        padding: 8px; /* Giảm thêm padding */
+        transform: scale(0.7); /* Thu nhỏ thêm nữa */
+    }
 }
 
-/* Text Color for Social Media Buttons */
-#bottom-right .btn-icon span {
-    color: #000;
+.highlight {
+    color: #000000; /* Chữ màu đen */
+    font-weight: bold; /* Chữ đậm */
+    text-shadow: 
+        0 0 8px rgba(255, 0, 0, 1),  /* Ánh sáng đỏ mạnh, gần chữ */
+        0 0 15px rgba(255, 0, 0, 0.8), /* Bóng sáng, lan tỏa mạnh */
+        0 0 20px rgba(255, 0, 0, 0.6), 
+        0 0 25px rgba(255, 0, 0, 0.4), 
+        0 0 30px rgba(255, 0, 0, 0.2); /* Bóng rộng hơn để tạo cảm giác phát sáng mạnh mẽ */
+    animation: glow-animation 1.5s infinite alternate; /* Thêm hiệu ứng động */
 }
 
-#bottom-right .btn-icon:hover span {
-    color: #fff;
+@keyframes glow-animation {
+    0% {
+        text-shadow: 
+            0 0 8px rgba(255, 0, 0, 1), 
+            0 0 15px rgba(255, 0, 0, 0.8), 
+            0 0 20px rgba(255, 0, 0, 0.6),
+            0 0 25px rgba(255, 0, 0, 0.4), 
+            0 0 30px rgba(255, 0, 0, 0.2); /* Khởi tạo ánh sáng mạnh */
+    }
+    100% {
+        text-shadow: 
+            0 0 12px rgba(255, 0, 0, 1.5), /* Tăng cường ánh sáng */
+            0 0 20px rgba(255, 0, 0, 1),
+            0 0 30px rgba(255, 0, 0, 0.8),
+            0 0 40px rgba(255, 0, 0, 0.6),
+            0 0 50px rgba(255, 0, 0, 0.4); /* Ánh sáng phát triển mạnh hơn */
+    }
 }
+
+
+
+/*Bảng xếp hạng*/
 #leaderboard-overlay {
     position: fixed;
     top: 0;
@@ -422,8 +611,9 @@ canvas {
     text-align: center;
     width: 80%; /* Adjust as needed */
     max-width: 800px;
+    margin: 0 auto;
     animation: slideIn 0.5s ease-out;
-}
+    color: #FFF;}
 
 @keyframes slideIn {
     from { transform: translateY(-50px); opacity: 0; }
@@ -435,6 +625,91 @@ canvas {
     margin-bottom: 20px;
     color: #FFD700; /* Gold color for title */
     text-shadow: 0px 0px 10px rgba(255, 215, 0, 0.8); /* Glowing effect */
+}
+#leaderboard-table tbody {
+    max-height: 300px; /* Đặt chiều cao tối đa cho bảng */
+    overflow-y: auto; /* Kích hoạt thanh trượt dọc */
+    display: block; /* Chuyển thành khối để có thể cuộn */
+    width: 100%; /* Đảm bảo nội dung không bị co lại */
+}
+#leaderboard-table {
+    border-collapse: collapse;
+    width: 100%;
+    table-layout: fixed; /* Đảm bảo cột đồng nhất */
+}
+
+#leaderboard-table thead {
+    display: table;
+    width: 100%;
+    background-color: #f4f4f4; /* Màu nền tiêu đề */
+}
+
+#leaderboard-table tbody {
+    display: block; /* Chế độ khối để cuộn */
+    max-height: 300px; /* Giới hạn chiều cao */
+    overflow-y: scroll; /* Bật cuộn dọc */
+    width: 100%;
+    scrollbar-width: none; /* Ẩn thanh cuộn trên Firefox */
+}
+
+
+#leaderboard-table tbody::-webkit-scrollbar {
+    display: none; /* Ẩn thanh cuộn trên Chrome, Edge */
+}
+
+
+#leaderboard-table tbody tr {
+    display: table;
+    table-layout: fixed;
+    width: 100%;
+}
+
+#leaderboard-table th, #leaderboard-table td {
+    padding: 8px;
+    text-align: left;
+    border: 1px solid #ddd; /* Đường viền bảng */
+}
+
+#leaderboard-table th {
+    font-weight: bold;
+}
+
+#leaderboard-table thead, #leaderboard-table tbody tr {
+    display: table; /* Chuyển lại thành bảng để giữ cấu trúc hàng */
+    width: 100%;
+    table-layout: fixed; /* Đảm bảo cột không bị lệch */
+}
+#leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#leaderboard-table th,
+#leaderboard-table td {
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px;
+    text-align: center;
+    text-overflow: ellipsis; /* Hiển thị dấu ... khi chữ quá dài */
+    overflow: hidden; /* Ẩn phần văn bản vượt quá chiều rộng */
+    white-space: nowrap; /* Ngăn văn bản xuống dòng */
+    font-size: 1.1rem;
+    color: #FFF;
+}
+
+#leaderboard-table th {
+    background-color: #444;
+    color: #FFD700;
+    font-weight: bold;
+}
+
+#leaderboard-table tr:nth-child(even) {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+#leaderboard-table tr:hover {
+    background-color: rgba(255, 255, 255, 0.2);
 }
 
 #leaderboard-container ul {
@@ -461,21 +736,6 @@ canvas {
     background-color: rgba(255, 255, 255, 0.1); /* Slightly transparent track */
 }
 
-/* Optional: Add padding around the scrollable content */
-#leaderboard-container li {
-    display: flex;
-    justify-content: space-between;
-    padding: 10px 15px;
-    margin-bottom: 8px;
-    background: rgba(255, 255, 255, 0.2);
-    border-radius: 8px;
-    font-size: 1.1rem;
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-#leaderboard-container li:hover {
-    box-shadow: 0px 0px 10px rgba(255, 255, 255, 0.3);
-}
 
 #close-leaderboard {
     margin-top: 20px;
@@ -486,11 +746,12 @@ canvas {
     font-size: 1.2rem;
     border-radius: 5px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease;
 }
 
 #close-leaderboard:hover {
     background-color: #ff5733;
+    transform: scale(1.05);
 }
 #close-leaderboard {
     margin-top: 20px;
@@ -583,7 +844,7 @@ canvas {
     bottom: 0; /* Initially at the bottom */
     left: 50%;
     transform: translateX(-50%);
-    background-color: rgba(0, 0, 0, 0.85); /* Dark background with slight transparency */
+    background-color: rgba(0, 0, 0, 0.6); /* Dark background with slight transparency */
     padding: 6px 30px;
     border-radius: 25px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
@@ -599,7 +860,7 @@ canvas {
 }
 @media screen and (max-width: 768px) {
     #chat-box {
-        width: 90%; /* Chiếm gần hết chiều rộng màn hình */
+        width: 50%; /* Chiếm gần hết chiều rộng màn hình */
         max-width: 400px; /* Đặt giới hạn chiều rộng */
         padding: 8px 15px; /* Giảm padding */
     }
@@ -685,16 +946,15 @@ canvas {
     align-items: center; /* Căn giữa các phần tử theo chiều dọc */
     gap: 10px; /* Khoảng cách giữa các phần tử */
     background-color: rgba(255, 255, 255, 0.15); /* Màu nền nhạt hơn */
-    padding: 10px; /* Đệm trong */
+    padding: 6px; /* Đệm trong */
     border-radius: 20px; /* Bo tròn góc */
     width: 100%; /* Đặt chiều rộng full */
     box-sizing: border-box; /* Đảm bảo padding không ảnh hưởng đến width */
     position: absolute; /* Định vị tuyệt đối */
-    bottom: 10px; /* Đặt cách đáy của chat-box một khoảng */
+    bottom: 6px; /* Đặt cách đáy của chat-box một khoảng */
     left: 50%; /* Căn giữa theo chiều ngang */
     transform: translateX(-50%);
 }
-
 /* Bỏ chiều cao giới hạn của chat-content */
 #chat-box.expanded .chat-content {
     max-height: calc(100% - 60px); /* Trừ chiều cao của chat-input */
@@ -834,5 +1094,292 @@ canvas {
 .hidden {
     display: none;
 }
+
+#control-settings-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+#control-settings-container {
+    background: #f0f0f0;
+    padding: 20px;
+    border-radius: 10px;
+    text-align: center;
+    width: 400px;
+}
+
+.control-options {
+    display: flex;
+    justify-content: space-around;
+    margin: 20px 0;
+}
+
+.control-option {
+    text-align: center;
+}
+
+.control-option i {
+    font-size: 50px; /* Kích thước biểu tượng */
+    margin-bottom: 10px;
+    color: #333; /* Màu mặc định */
+}
+
+.control-option:hover i {
+    color: #007BFF; /* Màu khi hover */
+}
+
+
+button.apply-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button.cancel-btn {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-left: 10px;
+}
+
+/* Tăng kích thước và làm nút emoji nổi bật hơn */
+#emoji-button {
+    background-color: #f7f7f7;  /* Màu nền sáng */
+    border: none;
+    border-radius: 50%;
+    padding: 10px;
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;  /* Thêm hiệu ứng khi hover */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);  /* Thêm bóng đổ nhẹ */
+}
+
+/* Thêm hiệu ứng khi hover */
+#emoji-button:hover {
+    background-color: #f0c674;  /* Màu nền vàng khi hover */
+    transform: scale(1.1);  /* Phóng to nút khi hover */
+}
+
+/* Hiệu ứng khi nhấn */
+#emoji-button:active {
+    transform: scale(0.9);  /* Thu nhỏ khi nhấn */
+}
+
+/* Biểu tượng cảm xúc lớn hơn một chút */
+#emoji-button i {
+    font-size: 1.5rem;  /* Tăng kích thước biểu tượng */
+    color: #4a4a4a;  /* Màu biểu tượng */
+}
+
+/* Hiệu ứng cho emoji picker */
+#emoji-picker {
+    display: none;
+    position: absolute;
+    bottom: 90px;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+    padding: 10px;
+    z-index: 10;
+    max-height: 300px;
+    overflow-y: auto;  /* Cho phép cuộn dọc */
+    width: 90%;
+    max-width: 400px;
+}
+
+#emoji-picker::-webkit-scrollbar {
+    width: 8px; /* Cho phép cuộn nhưng ẩn thanh cuộn */
+    display: none;
+}
+
+#emoji-picker .emoji {
+    font-size: 1.6rem;
+    cursor: pointer;
+    padding: 10px;
+    transition: all 0.3s ease;
+    display: inline-block;
+    width: 35px;
+    height: 35px;
+    text-align: center;
+    margin: 5px;
+    border-radius: 5px; /* Cải thiện hình dáng các emoji */
+}
+
+#emoji-picker .emoji:hover {
+    transform: scale(1.2);
+    background-color: #f7f7f7;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Thêm bóng khi hover */
+}
+
+/* Hiệu ứng đẩy main-container sang một bên */
+#main-container.hidden {
+    transform: translateX(-100%);
+    transition: transform 0.5s ease;
+}
+
+/* Thêm hiệu ứng cho multi-play-container */
+#multi-play-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.7); /* Màu nền bán trong suốt */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    box-sizing: border-box;
+    transform: translateX(100%); /* Đặt multi-play-container ngoài màn hình */
+    transition: transform 0.5s ease;
+}
+
+#multi-play-container.show {
+    transform: translateX(0); /* Di chuyển vào màn hình */
+}
+
+/* Cải thiện giao diện tạo phòng */
+.create-room, .join-room {
+    width: 45%;
+    padding: 30px;
+    border-radius: 12px;
+    background: linear-gradient(145deg, #5c6bc0, #3f51b5); /* Gradient màu đẹp mắt */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+.create-room:hover, .join-room:hover {
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    transform: scale(1.05); /* Zoom nhẹ khi hover */
+}
+
+.create-room h3, .join-room h3 {
+    color: #fff;
+    font-family: 'Roboto', sans-serif;
+    font-weight: 500;
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+}
+
+.create-room label, .join-room label {
+    color: #fff;
+    font-size: 1rem;
+    margin-bottom: 5px;
+}
+
+/* Input styles */
+#create-room-name, #join-room-code {
+    width: 100%;
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    margin-top: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+#create-room-name:focus, #join-room-code:focus {
+    border-color: #ffeb3b; /* Màu vàng sáng khi focus */
+    box-shadow: 0 0 5px rgba(255, 235, 59, 0.6); /* Ánh sáng nhẹ khi focus */
+    outline: none;
+}
+
+/* Button styles */
+#create-room-btn, #join-room-btn {
+    background-color: #ffeb3b;
+    color: #333;
+    border: none;
+    padding: 12px 20px;
+    cursor: pointer;
+    margin-top: 20px;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+#create-room-btn:hover, #join-room-btn:hover {
+    background-color: #fdd835;
+    transform: translateY(-3px); /* Nâng nút lên khi hover */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Thêm bóng đổ cho nút */
+}
+
+#create-room-btn:active, #join-room-btn:active {
+    transform: translateY(1px); /* Khi nhấn, nút dâng xuống một chút */
+}
+
+/* Hiệu ứng animation khi phần multi-play-container xuất hiện */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.multi-play-area {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 900px;
+    background-color: transparent;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    animation: fadeIn 0.5s ease-out;
+    gap: 30px;
+}
+
+/* Hiệu ứng cho nút icon */
+#back-to-main-button {
+    background-color: transparent;
+    color: #fff;
+    border: none;
+    padding: 10px;
+    cursor: pointer;
+    font-size: 28px;
+    transition: all 0.3s ease;
+    margin-top: 20px; /* Thêm khoảng cách phía trên */
+    align-self: center; /* Căn giữa nút */
+}
+
+#back-to-main-button:hover {
+    background-color: rgba(255, 255, 255, 0.1); /* Thêm hiệu ứng nền sáng khi hover */
+    border-radius: 50%;
+    transform: scale(1.1);
+}
+
+#back-to-main-button:active {
+    transform: scale(0.95); /* Giảm kích thước khi nhấn */
+}
+
+
 
 
